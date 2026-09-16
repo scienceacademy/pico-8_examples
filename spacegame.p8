@@ -6,11 +6,13 @@ mobs={}
 function _init()
 	initplayer()
 	makestars()
+	add(mobs,makemob(63,20))
 end
 
 function _update()
 	updateplayer()
 	updatestars()
+	updatemobs()
 
 end
 
@@ -18,6 +20,8 @@ function _draw()
 	cls()
 	drawstars()
 	drawplayer()
+	drawmobs()
+	print(flr(time()*5)%2+1)
 end
 -->8
 --player functions
@@ -28,11 +32,13 @@ function initplayer()
 end
 
 function updateplayer()
-	if btn(⬅️) then
-		p.x-=1
-	elseif btn(➡️) then
-		p.x+=1
-	end
+	local v={x=0,y=0}
+	if (btn(⬅️)) v.x-=1
+	if (btn(➡️)) v.x+=1
+	if (btn(⬆️)) v.y-=1
+	if (btn(⬇️)) v.y+=1
+	p.x+=v.x
+	p.y+=v.y
 end
 
 function drawplayer()
@@ -74,7 +80,28 @@ end
 
 -->8
 --mobs
+function makemob(x,y)
+	local newmob={}
+	newmob.x=x
+	newmob.y=y
+	newmob.spr=17
+	newmob.frames={17,18}
+	newmob.animspd=8
+	return newmob
+end
 
+function drawmobs()
+	for m in all(mobs) do
+		spr(m.spr,m.x,m.y)
+	end
+end
+
+function updatemobs()
+	for m in all(mobs) do
+		local f=flr(time()*m.animspd)%#m.frames+1
+		m.spr=m.frames[f]
+	end
+end
 -->8
 --helper functions
 function collide(a,b)
